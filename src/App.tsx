@@ -1,13 +1,11 @@
-import Review from "./components/Review";
+import { Review, ReviewTitle } from "./components/Review";
+import { APP_TITLE } from "./constants";
 
 function App() {
   return (
     <main>
       <section className="container">
-        <div className="title">
-          <h2> ours reviews</h2>
-          <div className="underline"></div>
-        </div>
+        <ReviewTitle title={APP_TITLE} />
         <Review />
       </section>
     </main>

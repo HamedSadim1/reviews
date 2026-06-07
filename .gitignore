@@ -7,10 +7,35 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
+# Environment files
+.env
+.env.*
+!.env.example
+
+# Dependencies
 node_modules
+.pnp
+.pnp.js
+
+# Build output
 dist
 dist-ssr
+build
+*.tsbuildinfo
+
+# Test coverage
+coverage
+
+# Cache
+.eslintcache
+.vite/
+
+# Local package manager files
 *.local
+.pnpm-store
+
+# Husky (local git hooks — regenerated on npm install)
+.husky/_
 
 # Editor directories and files
 .vscode/*
