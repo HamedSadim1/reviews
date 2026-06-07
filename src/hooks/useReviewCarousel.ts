@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { reviewsData } from "../data";
 import { INITIAL_REVIEW_INDEX } from "../constants";
 import { nextIndex, prevIndex, randomIndex } from "../utils";
@@ -27,6 +27,9 @@ export interface UseReviewCarouselReturn {
  * Returns the current review, navigation callbacks, and metadata
  * so that any presentational component can remain stateless.
  * Supports keyboard navigation (Left/Right arrow keys).
+ *
+ * The React Compiler automatically memoizes all callbacks,
+ * so manual useCallback wrappers are not needed.
  */
 export const useReviewCarousel = (
   initialIndex: number = INITIAL_REVIEW_INDEX,
@@ -34,41 +37,27 @@ export const useReviewCarousel = (
   const [index, setIndex] = useState<number>(initialIndex);
   const totalReviews = reviewsData.length;
 
-  const goPrev = useCallback(
-    () => setIndex((i) => prevIndex(i, totalReviews)),
-    [totalReviews],
-  );
+  const goPrev = () => setIndex((i) => prevIndex(i, totalReviews));
+  const goNext = () => setIndex((i) => nextIndex(i, totalReviews));
+  const goRandom = () => setIndex((i) => randomIndex(i, totalReviews));
+  const goTo = (target: number) => {
+    setIndex(target);
+  };
 
-  const goNext = useCallback(
-    () => setIndex((i) => nextIndex(i, totalReviews)),
-    [totalReviews],
-  );
-
-  const goRandom = useCallback(
-    () => setIndex((i) => randomIndex(i, totalReviews)),
-    [totalReviews],
-  );
-
-  const goTo = useCallback(
-    (target: number) => {
-      setIndex(target);
-    },
-    [],
-  );
-
-  // Keyboard navigation
+  // Keyboard navigation (effect avoids depending on callbacks so
+  // they can remain plain functions — the React Compiler memoizes them)
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "ArrowLeft") {
-        goPrev();
+        setIndex((i) => prevIndex(i, totalReviews));
       } else if (e.key === "ArrowRight") {
-        goNext();
+        setIndex((i) => nextIndex(i, totalReviews));
       }
     };
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [goPrev, goNext]);
+  }, [totalReviews]);
 
   const review = reviewsData[index];
 
